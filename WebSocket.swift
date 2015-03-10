@@ -268,10 +268,14 @@ public class WebSocket : NSObject, NSStreamDelegate {
         if writeQueue != nil {
             writeQueue!.waitUntilAllOperationsAreFinished()
         }
-        inputStream!.removeFromRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
-        outputStream!.removeFromRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
-        inputStream!.close()
-        outputStream!.close()
+        if let inputStream = inputStream { // Unwrap to prevent - fatal error: unexpectedly found nil while unwrapping an Optional value
+            inputStream.removeFromRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+            inputStream.close()
+        }
+        if let outputStream = outputStream {
+            outputStream.removeFromRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+            outputStream.close()
+        }
         inputStream = nil
         outputStream = nil
         isRunLoop = false
